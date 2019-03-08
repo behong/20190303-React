@@ -7,6 +7,7 @@ import TableBody  from '@material-ui/core/TableBody'
 import TableRow   from '@material-ui/core/TableRow'
 import TableCell  from '@material-ui/core/TableCell'
 import { withStyles } from '@material-ui/core/styles'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 const styles = theme => ({
   root: {
@@ -17,45 +18,26 @@ const styles = theme => ({
   table: {
     minWidth: 700,
   },
+  progress:{
+    margin : theme.spacing.unit * 2
+  },
 });
-/*
-const customers =[{
-  'id' : 1 ,
-  'image' :"https://placeimg.com/64/64/any" ,
-  'name' : '홍성인',
-  'brithday' : 810227,
-  'gender' : '남자',
-  'job' :'개발자'
-},
-{
-  'id' : 2 ,
-  'image' :"https://placeimg.com/64/64/any" ,
-  'name' : '홍지유',
-  'brithday' : 120424,
-  'gender' : '여자',
-  'job' :'초등학생'
-},
-{
-  'id' : 3 ,
-  'image' :"https://placeimg.com/64/64/any" ,
-  'name' : '홍지유',
-  'brithday' : 150921,
-  'gender' : '여자',
-  'job' :'어린이'
-}]
-*/
+
 class App extends Component {
   
   //변경 되는 변수는 state
   state ={
-     customers:""
+     customers:"",
+     completed:0
   }
   //라이프 사이클 
+  //1)construct 2)componentWillMount 3)render 4) componentDidMount
+  // props 나 state  변경 되면  shouldComponentUpdate()--> render 
   // 컴포넌트 모두 읽고 난 후
   componentDidMount(){
-    // api
+    this.timer = setInterval(this.progress,20); //0.02초 마다 progress 함수호출
     this.callApi()
-        .then(res => this.setState({customers:res}))
+        .then(res => this.setState({customers:res})) //상태가 변하면 갱신
         .catch(err => console.log(err));
   }
   callApi = async () =>{
@@ -63,6 +45,12 @@ class App extends Component {
     const body = await response.json();
     return body;
   }
+
+  progress =() =>{
+    const { completed } =this.state;
+    this.setState({completed:completed >= 100 ? 0 : completed + 1})
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -80,12 +68,17 @@ class App extends Component {
             </TableHead>
             <TableBody>
             {this.state.customers ? this.state.customers.map( c =>{
-              return ( <Customer  key={c.id}  id={c.id} image={c.image}
-                              name={c.name} brithday={c.brithday} gender={c.gender}
-                              jobs={c.job}    
-                       />);
-              }) : ""}
-            } 
+              return ( <Customer  
+                        key={c.id}  id={c.id} image={c.image}
+                        name={c.name} brithday={c.brithday} gender={c.gender}
+                        jobs={c.job} />);
+              }) : 
+              <TableRow>
+                <TableCell colSpan="6" align="center">
+                  <CircularProgress className={classes.progress} variant="determinate" value={this.state.completed} color="secondary" />
+                </TableCell>
+              </TableRow>
+              }
             </TableBody>
           </Table>
       </Paper>      
