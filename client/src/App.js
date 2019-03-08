@@ -18,7 +18,7 @@ const styles = theme => ({
     minWidth: 700,
   },
 });
-
+/*
 const customers =[{
   'id' : 1 ,
   'image' :"https://placeimg.com/64/64/any" ,
@@ -43,8 +43,26 @@ const customers =[{
   'gender' : '여자',
   'job' :'어린이'
 }]
-
+*/
 class App extends Component {
+  
+  //변경 되는 변수는 state
+  state ={
+     customers:""
+  }
+  //라이프 사이클 
+  // 컴포넌트 모두 읽고 난 후
+  componentDidMount(){
+    // api
+    this.callApi()
+        .then(res => this.setState({customers:res}))
+        .catch(err => console.log(err));
+  }
+  callApi = async () =>{
+    const response = await fetch('/api/customers');
+    const body = await response.json();
+    return body;
+  }
   render() {
     const { classes } = this.props;
     return (
@@ -61,20 +79,13 @@ class App extends Component {
               </TableRow>
             </TableHead>
             <TableBody>
-            {customers.map( c =>{
-                            return (
-                              <Customer
-                              key={c.id}
-                              id={c.id}
-                              image={c.image}
-                              name={c.name}
-                              brithday={c.brithday}
-                              gender={c.gender}
+            {this.state.customers ? this.state.customers.map( c =>{
+              return ( <Customer  key={c.id}  id={c.id} image={c.image}
+                              name={c.name} brithday={c.brithday} gender={c.gender}
                               jobs={c.job}    
-                              />          
-                            );
-                          })
-            }
+                       />);
+              }) : ""}
+            } 
             </TableBody>
           </Table>
       </Paper>      
