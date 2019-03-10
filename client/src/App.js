@@ -40,6 +40,7 @@ class App extends Component {
         .then(res => this.setState({customers:res})) //상태가 변하면 갱신
         .catch(err => console.log(err));
   }
+  
   callApi = async () =>{
     const response = await fetch('/api/customers');
     const body = await response.json();
@@ -70,7 +71,7 @@ class App extends Component {
             {this.state.customers ? this.state.customers.map( c =>{
               return ( <Customer  
                         key={c.id}  id={c.id} image={c.image}
-                        name={c.name} brithday={c.brithday} gender={c.gender}
+                        name={c.name} birthday={c.birthday} gender={c.gender}
                         jobs={c.job} />);
               }) : 
               <TableRow>
