@@ -21,10 +21,39 @@ const connection = mysql.createConnection({
 
 connection.connect();
 
+const multer = require('multer');
+const upload = multer({dest: './upload'});
+
 app.get('/api/customers' ,(req,res) =>{
     connection.query(
         "SELECT * FROM CUSTOMER",
         (err,rows,fields) =>{
+            res.send(rows);
+        }
+    );
+});
+
+// upload 폴더 공유 전역 변수 
+// 실제 사용자는 /image 찾고 컴퓨터 경로는 upload
+app.use('/image',express.static('./upload'));
+
+app.post('/api/customers',upload.single('image'),(req,res) =>{
+    let sql = 'INSERT INTO CUSTOMER VALUES (null,?,?,?,?,?)';
+    // multer 라이브러리
+    // 실제 파일 바이너리로 받고 
+    // 해당 라이브러리에서 filename명 중복되지 않게 제공받는다
+    let image = '/image/'+ req.file.filename;
+
+    let userName = req.body.userName;
+    let birthday = req.body.birthday;
+    let gender = req.body.gender;
+    let job = req.body.job;
+
+    let params =[image,userName,birthday,gender,job];
+    console.log("SQL " + sql);
+    console.log("params " + params);
+    connection.query(sql,params,
+        (err,rows,fields) => {
             res.send(rows);
         }
     );

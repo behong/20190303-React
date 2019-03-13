@@ -4,24 +4,33 @@ import { post } from 'axios'
 class CustomerAdd extends React.Component {
 
     constructor(props){
-         super(props);
+        super(props);
 
-         this.state ={
-             file: null,
-             userName:'',
-             birthday:'',
-             gender:'',
-             job:'',
-             fileName:''
-         }
-    }
+        this.state ={
+            file: null,
+            userName:'',
+            birthday:'',
+            gender:'',
+            job:'',
+            fileName:''
+        }
+   }
 
     handleFormSubmit = (e) =>{
         e.preventDefault() //
         this.addCustomer()
             .then((response) =>{
-                console.log(response.data);
+                console.log("리스폰 "+ response.data);
+                this.props.stateRefresh();
             })
+        this.setState({
+            file:null,
+            userName: '',
+            birthday: '',
+            gender: '',
+            job: '',
+            fileName: ''
+        })
     }
 
     handleFileChange =(e) =>{
