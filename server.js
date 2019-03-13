@@ -26,7 +26,7 @@ const upload = multer({dest: './upload'});
 
 app.get('/api/customers' ,(req,res) =>{
     connection.query(
-        "SELECT * FROM CUSTOMER",
+        "SELECT * FROM CUSTOMER WHERE isDeleted = 0",
         (err,rows,fields) =>{
             res.send(rows);
         }
@@ -38,7 +38,7 @@ app.get('/api/customers' ,(req,res) =>{
 app.use('/image',express.static('./upload'));
 
 app.post('/api/customers',upload.single('image'),(req,res) =>{
-    let sql = 'INSERT INTO CUSTOMER VALUES (null,?,?,?,?,?)';
+    let sql = 'INSERT INTO CUSTOMER VALUES (null,?,?,?,?,?,now(),0)';
     // multer 라이브러리
     // 실제 파일 바이너리로 받고 
     // 해당 라이브러리에서 filename명 중복되지 않게 제공받는다
@@ -58,5 +58,17 @@ app.post('/api/customers',upload.single('image'),(req,res) =>{
         }
     );
 });
+
+app.delete('/api/customers/:id',(req,res) =>{
+    let sql = "UPDATE CUSTOMER SET isDeleted = 1 WHERE id =?";
+    let params = [req.params.id]; //post 나 get 아니므로 파라미터 :id
+    console.log("SQL " + sql);
+    console.log("params " + params);
+    connection.query(sql,params,
+        (err,rows,fields) => {
+            res.send(rows);
+        }
+    );
+} )
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
