@@ -17,7 +17,7 @@ class CustomerAdd extends React.Component {
    }
 
     handleFormSubmit = (e) =>{
-        e.preventDefault() //
+        e.preventDefault() 
         this.addCustomer()
             .then((response) =>{
                 console.log("리스폰 "+ response.data);
